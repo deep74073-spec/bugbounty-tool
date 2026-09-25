@@ -8,6 +8,7 @@ app.use(express.static("app"));
 
 const targetRoutes = require("./backend/routes/targets");
 const securityRoutes = require("./backend/routes/security");
+const findingRoutes = require("./backend/routes/findings");
 
 app.get("/api/health", (req, res) => {
   res.json({
@@ -18,6 +19,7 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api/targets", targetRoutes);
 app.use("/api/security", securityRoutes);
+app.use("/api/findings", findingRoutes);
 
 app.listen(PORT, "127.0.0.1", () => {
   console.log(`BugBounty Toolkit: http://127.0.0.1:${PORT}`);
