@@ -6,6 +6,16 @@ const {
   listFindings
 } = require("../services/findingService");
 
+const { getTarget } = require("../services/targetService");
+
+const ALLOWED_SEVERITIES = [
+  "informational",
+  "low",
+  "medium",
+  "high",
+  "critical"
+];
+
 router.get("/", (req, res) => {
   res.json({
     success: true,
@@ -31,10 +41,32 @@ router.post("/", (req, res) => {
       });
     }
 
+    const hostname = String(target)
+      .trim()
+      .toLowerCase()
+      .replace(/^https?:\/\//, "")
+      .split("/")[0];
+
+    const authorizedTarget = getTarget(hostname);
+
+    if (!authorizedTarget || !authorizedTarget.authorized) {
+      return res.status(403).json({
+        success: false,
+        error: "Target is not in the authorized scope"
+      });
+    }
+
+    if (!ALLOWED_SEVERITIES.includes(String(severity).toLowerCase())) {
+      return res.status(400).json({
+        success: false,
+        error: `Invalid severity. Allowed values: ${ALLOWED_SEVERITIES.join(", ")}`
+      });
+    }
+
     const finding = addFinding({
-      target,
-      title,
-      severity,
+      target: hostname,
+      title: String(title).trim(),
+      severity: String(severity).toLowerCase(),
       evidence: evidence || "",
       description: description || "",
       remediation: remediation || ""

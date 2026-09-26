@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BugBounty Toolkit</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+  <header>
+    <h1>BugBounty Toolkit</h1>
+    <p>Authorized Security Testing Dashboard</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Authorized Target</h2>
+
+      <div class="row">
+        <input
+          id="target"
+          type="text"
+          placeholder="example.com"
+          autocomplete="off"
+        >
+
+        <button onclick="addTarget()">
+          Add Target
+        </button>
+      </div>
+
+      <div id="targets"></div>
+    </section>
+
+    <section class="card">
+      <h2>Recon</h2>
+
+      <button onclick="runRecon()">
+        Run Safe Recon
+      </button>
+
+      <button onclick="generateReport('markdown')">
+        Markdown Report
+      </button>
+
+      <button onclick="generateReport('json')">
+        JSON Report
+      </button>
+
+      <pre id="output">Ready.</pre>
+    </section>
+
+    <section class="card">
+      <h2>Findings</h2>
+      <button onclick="loadFindings()">
+        Refresh Findings
+      </button>
+
+      <div id="findings"></div>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

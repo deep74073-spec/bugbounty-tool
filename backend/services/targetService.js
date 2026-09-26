@@ -1,4 +1,45 @@
-const targets = new Map();
+const fs = require("fs");
+const path = require("path");
+
+const DATA_DIR = path.join(__dirname, "../../data");
+const TARGETS_FILE = path.join(DATA_DIR, "targets.json");
+
+function ensureStorage() {
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
+
+  if (!fs.existsSync(TARGETS_FILE)) {
+    fs.writeFileSync(TARGETS_FILE, "[]", "utf8");
+  }
+}
+
+function loadTargets() {
+  ensureStorage();
+
+  try {
+    const data = fs.readFileSync(TARGETS_FILE, "utf8");
+    const list = JSON.parse(data);
+
+    return new Map(
+      list.map((target) => [target.hostname, target])
+    );
+  } catch (error) {
+    return new Map();
+  }
+}
+
+function saveTargets(targets) {
+  ensureStorage();
+
+  fs.writeFileSync(
+    TARGETS_FILE,
+    JSON.stringify([...targets.values()], null, 2),
+    "utf8"
+  );
+}
+
+const targets = loadTargets();
 
 function normalizeTarget(input) {
   if (!input || typeof input !== "string") {
@@ -25,11 +66,14 @@ function normalizeTarget(input) {
 
 function addTarget(input) {
   const target = normalizeTarget(input);
+
   targets.set(target.hostname, {
     ...target,
     authorized: true,
     addedAt: new Date().toISOString()
   });
+
+  saveTargets(targets);
 
   return targets.get(target.hostname);
 }
@@ -39,7 +83,7 @@ function listTargets() {
 }
 
 function getTarget(hostname) {
-  return targets.get(hostname.toLowerCase());
+  return targets.get(String(hostname).toLowerCase());
 }
 
 module.exports = {
